@@ -1,24 +1,51 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil';
+
+const textState = atom({
+  key: 'textState',
+  default: '',
+})
+
+const textFontSizeState = selector({
+  key: 'textFontSizeState',
+  get: ({get}) => {
+    const text = get(textState)
+    const textLength = text.length
+    if (textLength <= 8) {
+      return "2rem";
+    } else if (textLength <= 16) {
+      return "1.5rem";
+    } else if (textLength <= 24) {
+      return "1rem";
+    } else {
+      return "0.8rem";
+    }
+  }
+})
 
 function App() {
+  const [text, setText] = useRecoilState(textState)
+  const fontSize = useRecoilValue(textFontSizeState)
+
+  const addA = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (text.length > 27) {
+      alert('Too long!')
+      return
+    }
+    setText(text + 'A')
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="container">
+        <span style={{fontSize: `${fontSize}`}}>{text}</span>
+      </div>
+      <button onClick={addA}>A</button>
     </div>
   );
 }
